@@ -177,7 +177,7 @@ void regretCalculationThompson(vector<state*> &states)
 	double final_estimate;
 	double up_estimate;
 
-	int cumregret = 0;
+	int cumregret = 1;
 
 
 	ofstream myfile;
