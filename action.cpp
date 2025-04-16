@@ -8,10 +8,6 @@ action::action()
 {
 	size = 0;
 }
-action::~action()
-{
-
-}
 void action::addnextstatetprob(state* s, double prob)//Adding a next state and tprob to action
 {
 	nextstates.push_back(s);
