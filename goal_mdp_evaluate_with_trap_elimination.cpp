@@ -4,10 +4,10 @@
 #include "state.h"
 
 
-//A function that takes a single scc component and state space as a input and returns boolean value indicating whether that component have
-//outgoing edge or not with respect to current policy which is produced after value iteration.
-//If it does not have any outgoing edge and do not contain goal state it become trap scc.  
 
+// This function takes a single SCC component and the full state space as input, and returns a boolean indicating 
+// whether the component has any outgoing edges under the current policy (derived after value iteration). 
+// If the component has no outgoing edges and does not contain the goal state, it is classified as a trap SCC.
 bool outgoedgesingle(vector<state*> states, int* scc_comp, int* size)
 {
 	int state_number = states.size();
@@ -56,11 +56,9 @@ bool outgoedgegeneral(vector<state*> states, int* scc_comp, int* size)
 	for (int a = 0; a < scc_compsize; a++)
 	{
 		int action_size = (*states[*(scc_comp + a)]).action_size;
-
 		for (int i = 0; i < action_size; i++)
 		{
 			int  next_statesize = (*states[*(scc_comp + a)]).get_action(i)->size;
-
 			for (int c = 0; c < next_statesize; c++)
 			{
 				int count = 0;
@@ -76,16 +74,19 @@ bool outgoedgegeneral(vector<state*> states, int* scc_comp, int* size)
 	return false;
 }
 
-//A function that takes scc set as a input and finds whether they are trap according to graph produced by current goal probability function.After identifying 
-// we need to get permanent traps which for all states contain no action that leads to other state outside of trap whatsoever.These permanent states are
-//absolute dead ends and their goal probability function is set to zero.
+// This function takes a set of strongly connected components (SCCs) as input and determines whether each is a trap, 
+// based on the graph produced by the current goal probability function. After identification, it further distinguishes 
+// permanent traps—SCCs in which all states lack any action leading to a state outside the component. 
+// These permanent traps represent absolute dead ends, and their goal probability values are set to zero.
 void eliminatetrap(vector<state*> &states, int* size, int**& scc_set)
 {
-	int state_number = states.size();
 	scc_set = Tarjan(states, size);
-	bool check;
+	int state_number = states.size();
 	int scc_set_size = (*size);
 	int sin_scc_size;
+	
+	bool check;
+	bool per_trap;
 
 	for (int i = 0; i < scc_set_size; i++)
 	{
@@ -114,7 +115,7 @@ void eliminatetrap(vector<state*> &states, int* size, int**& scc_set)
 
 
 	}
-	bool per_trap;
+
 	for (int i = 0; i < scc_set_size; i++)
 	{
 		if (**(scc_set + i) != -1)// Eliminate non-trap scc component that we indicate above
@@ -140,16 +141,22 @@ void eliminatetrap(vector<state*> &states, int* size, int**& scc_set)
 
 }
 
-//If particular trap is not permanent call this function.Not permanent means
-//They have at least one action out of all states that leads to exit but they are not visible
-//under current greddy policy.So this function sets next prob value for all states in such component
-//to the highest q-value of any action in any component's states that has a chance to 
-//transitioning to exit 
+// If the trap is not permanent, call this function.
+// A trap is considered non-permanent if at least one action from any state in the component 
+// can lead to an exit state, even if that action is not selected by the current greedy policy.
+// This function updates the next-state probability values for all states in the component.
+// The update sets each state's value to the highest Q-value of any action (from any state 
+// in the component) that has a chance of transitioning to an exit.
 void set_for_non_permanant_states(vector<state*> states, int* scc_comp)
 {
-	int state_number = states.size();
+
 	vector<action> exit_actions;
 	int scc_compsize = 0;
+	int state_number = states.size();
+
+	double max = 0;
+	double temp = 0;
+	
 	for (int a = 0; a < state_number; a++)
 	{
 		if (*(scc_comp + a) == state_number + 1)
@@ -177,8 +184,8 @@ void set_for_non_permanant_states(vector<state*> states, int* scc_comp)
 		}
 
 	}
-	double max = 0;
-	double temp = 0;
+	
+	
 	for (int i = 0; i < exit_actions.size(); i++)
 	{
 		int  next_state_exit_size = exit_actions[i].size;
@@ -198,11 +205,12 @@ void set_for_non_permanant_states(vector<state*> states, int* scc_comp)
 
 }
 
-//Implementation of Tarjan's algoritm to find strongly connected component for greedy graph in our MDP
-//The first value iteration produce greedy graph where we choose one action with respect to greedy policy according to converged goal probability function
-//from MAXPROB function, then this algorithm perform first step of identifying traps, finding scc's after finding these eliminate traps are fairly easy.
-//I have used example graph depicted in the image I uploaded.Output is two dimensional array where rows are different components , columns represents which
-//states are in that component.For the example graph outputs of my code is subsets that are showed in the picture.  
+// Implementation of Tarjan's algorithm to find strongly connected components (SCCs) in the greedy graph derived from our MDP. 
+// The greedy graph is constructed during the first value iteration, where we select one action per state based on the greedy policy 
+// guided by the converged goal probability function from the MAXPROB function. This algorithm performs the initial step in identifying traps—
+// by finding SCCs. Once the SCCs are identified, eliminating traps becomes straightforward. I used the example graph shown in the uploaded image. 
+// The output is a 2D array where each row represents a different SCC, and the columns indicate which states belong to that component. 
+// For the example graph, my code outputs subsets matching those shown in the image.
 
 int**  Tarjan(vector<state*> states, int* size)
 {
@@ -227,6 +235,7 @@ int**  Tarjan(vector<state*> states, int* size)
 	return scc;
 
 }
+
 void tarjanconnect(int* index, int* lowlink, bool* in_stack, stack<state>* S, int in, vector<state*> states, int** &scc, int* size)
 {
 	int state_number = states.size();
