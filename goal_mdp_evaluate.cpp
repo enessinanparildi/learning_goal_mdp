@@ -132,7 +132,6 @@ void find_and_revise(vector<state*> &states, double threshold, const double* heu
 	delete[] discovered;
 	delete[] previous_prob;
 
-
 }
 
 //finds and updates values of states
@@ -173,26 +172,29 @@ void Search(bool* discovered, vector<state*> &states, const int & current_state_
 			Search(discovered, states, num);
 	}
 
-}
 
-//Implement value iteration for general mdp it starts with zero initial prob values except goal which is set to one since we assign that state as a goal.
-//It assumes traps were already identified and their prob values is set to zero.Algorithm does not modify for goal and dead states. 
-
+// Implements value iteration for a general MDP. It starts with zero initial probability values for all states,
+// except for the goal state, which is set to one. This is because the goal state is predefined. 
+// The algorithm assumes that traps have already been identified and their probability values set to zero. 
+// It does not modify the values for the goal and dead-end states.
 void MAXPROB(double threshold, vector<state*> &states)
 {
 	// Contain previous goal probability function set
 	int state_number = states.size();
 	double *oldprob = new double[state_number - 2];
-	int i;
 	double curr = 0;
-	int check = 1;
 	double max = 0;
+
+	int i;
+	int check = 1;
 	int max_i;
+	
 	do {
 		for (i = 0; i < state_number - 1; ++i)
 		{
 			oldprob[i - 1] = states[i]->goalprob;
 		}
+		
 		//We could have exclude traps or in other words dead states from bellman updating, but letting them will not change anything and simplifies this code
 		//As long as we assume they are correctly identified and their initial is zero.At the end it is still zero.	
 		for (i = 0; i < state_number - 1; ++i)
@@ -242,6 +244,7 @@ void OPTIMALPROBPOLICY(vector<state*>& states)
 	double max = 0;
 	double max_i = 0;
 	int i;
+	
 	for (i = 1; i < state_number - 1; ++i)
 	{
 
