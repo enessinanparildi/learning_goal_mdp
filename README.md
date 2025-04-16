@@ -39,7 +39,7 @@ This MDP solver implements several algorithms for solving maximum probability pr
 
 ## Project Structure
 
-The project is organized into object-oriented components in both C++ and MATLAB:
+The project is organized into object-oriented components in both C++ and Python:
 
 - Core MDP classes (State, Action)
 - Algorithm implementations (MAXPROB, trap detection, learning algorithms)
