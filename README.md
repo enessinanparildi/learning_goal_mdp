@@ -2,6 +2,8 @@
 
 This project implements various algorithms and techniques for solving and analyzing Markov Decision Processes (MDPs), with a focus on the Goal Reachability with Bounded Probability (GRBP) problem and learning algorithms.
 
+Markov Decision Processes (MDPs) form the mathematical foundation of many reinforcement learning algorithms. They are widely used to model decision-making problems where outcomes are partly random and partly under the control of an agent. Applications include robotics, autonomous systems, game AI, recommendation systems, and resource management, where agents must learn optimal policies to maximize long-term rewards through trial and error.
+
 ## Table of Contents
 
 1. [Overview](#overview)
