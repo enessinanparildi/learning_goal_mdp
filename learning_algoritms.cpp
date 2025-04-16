@@ -118,8 +118,8 @@ void UCB_Tprob_Estimate(vector<state*> states, int round_number)
 	}
 
 	success_rate = total_num_of_goals / (double)round_number;
+	
 	cout << "success_rate: " << success_rate << endl;
-
 	cout << "final: " << final_estimate << endl;
 	cout << "up: " << up_estimate << endl;
 
@@ -141,17 +141,12 @@ void regretCalculationThompson(vector<state*> &states)
 	uniform_real_distribution<> dist_up(0, 1);
 	uniform_real_distribution<> dist_final(0, 1);
 
-
-
 	int *oracle_policy_set = new int[state_number - 2]; // 1 for cont -1 for final
-
 
 	int cumreward = 0;
 	int initialindex;
 	int oracle_index;
 	int learner_index;
-
-
 
 	int goal_rewardopt_counter = 0;
 
@@ -191,7 +186,6 @@ void regretCalculationThompson(vector<state*> &states)
 	MAXPROB(threshold_maxprob, states);
 	OPTIMALPROBPOLICY(states);
 
-
 	for (int i = 1; i < state_number - 1; i++)
 	{
 		if ((*states[i]).getmaxprobPolicy().compare("Cont") == 0)
@@ -209,8 +203,6 @@ void regretCalculationThompson(vector<state*> &states)
 			initialindex = dist(generator);
 			oracle_index = initialindex;
 			learner_index = initialindex;
-
-
 
 			beta_distribution<> distfinalprob(temp_goalnum, temp_deadnum);
 			beta_distribution<> distcontprob(temp_upnum, temp_downnum);
@@ -352,7 +344,6 @@ void regretCalculationThompson(vector<state*> &states)
 						}
 
 					}
-
 					if (flag_learn)
 					{
 						final_counter++;
@@ -371,8 +362,6 @@ void regretCalculationThompson(vector<state*> &states)
 							dead_counter++;
 						}
 					}
-
-
 				}
 				if ((learner_index == state_number - 1 || learner_index == 0))
 				{
@@ -390,10 +379,7 @@ void regretCalculationThompson(vector<state*> &states)
 			temp_upnum = temp_upnum + up_counter;
 			temp_downnum = temp_downnum + down_counter;
 
-
-
 			cumregret = cumregret + goal_rewardopt_counter - goal_end_counter;
-
 			cumRegret_set[round - 1] = cumregret;
 
 			goal_rewardopt_counter = 0;
@@ -407,14 +393,11 @@ void regretCalculationThompson(vector<state*> &states)
 
 		}
 
-
 		cumregret = 0;
 		temp_goalnum = 1;
 		temp_deadnum = 1;
 		temp_upnum = 1;
 		temp_downnum = 1;
-
-
 
 		for (int i = 0; i < maxroundnumber; i++)
 		{
@@ -441,19 +424,25 @@ void regretCalculationThompson(vector<state*> &states)
 }
 
 
-//I first tried with zero reward for cont action and zero reward for dead and 1 reward for goal but it did not give consistent result.Then I try to give reward 
-//values proportional to transition probabilities, so that it can simulate learning max prob values like kolobov's algorithm just like cost, then I choose lower learning rate. 
-//I did not fully test this version but it works much better than previous ones, manage to get correct optimal policy as far as I try.Input and outputs of 
-//this function work just like MAXPROB as I upload before.As far as I try ,it works surprisingly well when we choose reward proportional to t - probabilities and decreasing learning rate.        
+// Initially, I experimented with assigning zero rewards to continue actions and dead states, and a reward of 1 for the goal state. 
+// However, this setup did not yield consistent results. I then modified the approach to assign reward values proportional to the 
+// transition probabilities, aiming to simulate learning of maximum probability values similar to Kolobov's algorithm (like learning costs). 
+// I also lowered the learning rate. While I haven’t fully tested this version, it performs significantly better than the previous ones 
+// and consistently produces the correct optimal policy in my trials. The input and output structure of this function matches that of 
+// the previously uploaded MAXPROB function. From my observations, using rewards proportional to transition probabilities and a decreasing 
+// learning rate leads to surprisingly good results.     
 void qlearning(int episode, double discount, vector<state*> states) {
 
 	int state_number = states.size();
 	double e = 0.2;
+	
 	std::bernoulli_distribution distributioncont(real_upprob);//p = up
 	std::bernoulli_distribution  distributionfinal(real_goalprob);//p = goal
 	std::bernoulli_distribution  distribution_egreedy(e);
+	
 	uniform_int_distribution<> dist(1, state_number - 2);
 	uniform_int_distribution<> dist2(0, 1);
+	
 	double learningrate = 0.1;
 	int index;
 	int nextindex;
@@ -471,9 +460,8 @@ void qlearning(int episode, double discount, vector<state*> states) {
 		index = nextindex;
 		do {
 
-			// For policy choose random policy either cont or final
+			//For policy choose random policy either cont or final
 			//Choose policy according to a 
-
 			if (distribution_egreedy(generator))
 			{
 
@@ -531,8 +519,6 @@ void qlearning(int episode, double discount, vector<state*> states) {
 				}
 			}
 
-
-
 			(*states[index]).setqvalue(temp, a);
 
 			switch (ind)
@@ -550,9 +536,6 @@ void qlearning(int episode, double discount, vector<state*> states) {
 				index = 0;
 				break;
 			}
-
-
-
 
 		} while (!(index == state_number - 1 || index == 0));
 	}
